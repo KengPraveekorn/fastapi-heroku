@@ -1,17 +1,17 @@
 from fastapi import FastAPI
-from pydantic import BaseModel # New import
+from pydantic import BaseModel  # New import
 import mysql.connector
 
 app = FastAPI()
 
 # Connect E40DB ----------------------------------------------------------------------------------------------
 mydb = mysql.connector.connect(
-  host="163.50.57.96",
-  user="admin",
-  password="conDB!@#$%",
-  database="mt900"
+    host="163.50.57.96",
+    user="admin",
+    password="conDB!@#$%",
+    database="mt900"
 )
-print("Connented to E40DB ",mydb)
+print("Connented to E40DB ", mydb)
 
 # book_db = [
 #     {
@@ -41,15 +41,15 @@ print("Connented to E40DB ",mydb)
 #     title: str
 #     price: float
 
+
 class TwoMask(BaseModel):
     front_pos: str
     front_width: str
     back_pos: str
     back_width: str
-    lotno: str
 
-# Route ------------------------------------------------------------------------------------------------------ 
-#create new book
+# Route ------------------------------------------------------------------------------------------------------
+# create new book
 # @app.post("/book")
 # async def create_book(book: Book):
 #     book_db.append(book.dict())
@@ -59,9 +59,11 @@ class TwoMask(BaseModel):
 # async def get_book():
 #     return book_db
 
+
 @app.get("/")
 async def read_root():
     return {"Hello": "World"}
+
 
 @app.get("/twom")
 async def get_twom():
@@ -70,6 +72,7 @@ async def get_twom():
     myresult = mycursor.fetchall()
     return myresult
 
+
 @app.post("/twom/")
 async def create_twom(twom: TwoMask):
     data_new = [
@@ -77,11 +80,9 @@ async def create_twom(twom: TwoMask):
         twom.front_width,
         twom.back_pos,
         twom.back_width,
-        twom.lotno
     ]
     mycursor = mydb.cursor()
-    mycursor.execute("INSERT INTO twomask_cpk (front_pos,front_width,back_pos,back_width,lotno) VALUES (%s,%s,%s,%s,%s)",data_new)
+    mycursor.execute(
+        "INSERT INTO twomask_cpk (front_pos,front_width,back_pos,back_width) VALUES (%s,%s,%s,%s,%s)", data_new)
     mydb.commit()
-    return data_new 
-
-
+    return data_new
